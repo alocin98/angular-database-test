@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-const mysql = require('mysql2');
+import {SqlService} from './services/sql.service';
+import {tap} from 'rxjs/operators';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -7,15 +8,16 @@ const mysql = require('mysql2');
 })
 export class AppComponent {
   title = 'angular-database-test';
-  connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'test'
-  });
-  //mysql = new MysqlConnection();
+  sql: any = {};
 
-  constructor(){
+  constructor(private sqlService: SqlService){
+    
 
+  }
 
+  connectSql(){
+    this.sqlService.initialize(this.sql).pipe(
+      tap(console.log)
+    ).subscribe();
   }
 }
