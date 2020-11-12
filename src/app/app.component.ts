@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import {SqlService} from './services/sql.service';
 import {tap} from 'rxjs/operators';
+import{Generator} from '../core/generator';
+import { DH_NOT_SUITABLE_GENERATOR } from 'constants';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,7 +14,7 @@ export class AppComponent {
 
   constructor(private sqlService: SqlService){
     
-
+    alert(Generator.getName());
   }
 
   connectSql(){
