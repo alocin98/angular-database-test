@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {SqlService} from './services/sql.service';
 import {tap} from 'rxjs/operators';
+import {Observable} from "rxjs";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -9,15 +10,14 @@ import {tap} from 'rxjs/operators';
 export class AppComponent {
   title = 'angular-database-test';
   sql: any = {};
+  sqlConnectionResponse$: Observable<any>;
 
   constructor(private sqlService: SqlService){
-    
+
 
   }
 
   connectSql(){
-    this.sqlService.initialize(this.sql).pipe(
-      tap(console.log)
-    ).subscribe();
+    this.sqlConnectionResponse$ = this.sqlService.initialize(this.sql);
   }
 }

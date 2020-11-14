@@ -15,10 +15,10 @@ router.post('/initialize', function(req, res, next) {
   connection = mysql.createConnection(credentials);
   connection.connect(function(err){
     if(err){
-      res.status(400).send("Unable to connect to database. Connection string might be incorrect")
+      res.status(400).send({"message":"Unable to connect to database. Connection string might be incorrect"})
       return;
     }
-    res.send('MySQL Server successfully conected with connection string: ' + credentials);
+    res.send(JSON.stringify(connection));
   });
 });
 

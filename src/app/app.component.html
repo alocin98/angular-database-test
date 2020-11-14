@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <h1>Database Test</h1>
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-sm">
       <h2>MySQL Connection</h2>
       <form>
         <div class="input-group mb-3">
@@ -28,16 +28,16 @@
           </div>
           <input [(ngModel)]="this.sql.database" name="database" type="text" class="form-control" placeholder="Database">
         </div>
-        <button type="submit" class="btn btn-primary" (click)="connectSql()">connectSql</button>
+        <button type="submit" class="btn btn-primary" (click)="connectSql()">connect sql</button>
       </form>
+      <p>{{this.sqlConnectionResponse$ | async}}</p>
     </div>
-  </div>
-  <div class="col-md-4">
+  <div class="col-sm">
     One of three columns
   </div>
-  <div class="col-md-4">
+  <div class="col-sm">
     One of three columns
   </div>
+  </div>
 </div>
-<div class="container">
-</div>
+
