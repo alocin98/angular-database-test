@@ -24,7 +24,9 @@
           </div>
           <input [(ngModel)]="this.sql.database" name="database" type="text" class="form-control" placeholder="Database">
         </div>
+        <button (click)="this.fillTestSrver()">fill test server</button>
         <button type="submit" class="btn btn-primary" (click)="this.connectSql()">connectSql</button>
+        <p>{{response$ | async | json}}</p>
       </form>
         <div>
           <button type="submit" class="btn btn-primary" (click)="connectSql()">Reset Database</button>

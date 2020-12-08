@@ -34,8 +34,6 @@ export class SqlService implements IBenchmark {
   }
 
   initialize(credentials: any){
-    return this.http.post(this.initializeURL, credentials, this.httpConfig).pipe(
-      catchError(err => throwError(err))
-    );
+    return this.http.post(this.initializeURL, credentials, this.httpConfig);
   }
 }
