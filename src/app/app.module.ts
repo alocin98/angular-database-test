@@ -9,6 +9,19 @@ import { HttpClientModule } from '@angular/common/http';
 import { SqlComponent } from './components/sql/sql.component';
 import { IndexedDBComponent } from './components/indexed-db/indexed-db.component';
 import { MongoDBComponent } from './components/mongo-db/mongo-db.component';
+import {DBConfig, NgxIndexedDBModule} from "ngx-indexed-db";
+
+const dbConfig: DBConfig  = {
+  name: 'MyDb',
+  version: 1,
+  objectStoresMeta: [{
+    store: 'customer',
+    storeConfig: { keyPath: 'id', autoIncrement: true },
+    storeSchema: [
+      { name: 'name', keypath: 'name', options: { unique: false } }
+    ]
+  }]
+};
 
 @NgModule({
   declarations: [
@@ -22,7 +35,8 @@ import { MongoDBComponent } from './components/mongo-db/mongo-db.component';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    NgxIndexedDBModule.forRoot(dbConfig)
   ],
   providers: [],
   bootstrap: [AppComponent]
