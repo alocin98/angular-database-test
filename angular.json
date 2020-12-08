@@ -124,6 +124,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "angular-database-test"
+    }
+  },
+  "defaultProject": "angular-database-test",
+  "cli": {
+    "analytics": false
+  }
 }

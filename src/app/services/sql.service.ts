@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {IBenchmark} from '../../core/IBenchmark';
+import {catchError, map} from "rxjs/operators";
+import {throwError} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +34,8 @@ export class SqlService implements IBenchmark {
   }
 
   initialize(credentials: any){
-    return this.http.post(this.initializeURL, credentials, this.httpConfig);
+    return this.http.post(this.initializeURL, credentials, this.httpConfig).pipe(
+      catchError(err => throwError(err))
+    );
   }
 }
