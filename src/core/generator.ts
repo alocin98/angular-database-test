@@ -6,6 +6,18 @@ export class Generator{
 	    return name;
     }
 
+    public static getItem(){
+        const items = ["pen", "tree", "sunglass", "book", "screen", "pasta", "ski", "pole", "shoe", "pull-over", "headset"];
+        return items[Math.floor(Math.random() * (items.length - 1))];
+
+    }
+
+    public static getRandomDate(){
+        return new Date(+(new Date()) - Math.floor(Math.random()*10000000000));
+    }
+
+
+
     private static capFirst(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }

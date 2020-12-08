@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
-import {SqlService} from './services/sql.service';
-import {tap} from 'rxjs/operators';
-import{Generator} from '../core/generator';
-import { DH_NOT_SUITABLE_GENERATOR } from 'constants';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -10,16 +7,8 @@ import { DH_NOT_SUITABLE_GENERATOR } from 'constants';
 })
 export class AppComponent {
   title = 'angular-database-test';
-  sql: any = {};
-
-  constructor(private sqlService: SqlService){
-    
-    alert(Generator.getName());
+  constructor(){
   }
 
-  connectSql(){
-    this.sqlService.initialize(this.sql).pipe(
-      tap(console.log)
-    ).subscribe();
-  }
+
 }
