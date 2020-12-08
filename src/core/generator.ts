@@ -5,6 +5,18 @@ export class Generator{
       return this.capFirst(name1[this.getRandomInt(0, name1.length + 1)]) + ' ' + this.capFirst(name2[this.getRandomInt(0, name2.length + 1)]);
     }
 
+    public static getItem(){
+        const items = ["pen", "tree", "sunglass", "book", "screen", "pasta", "ski", "pole", "shoe", "pull-over", "headset"];
+        return items[Math.floor(Math.random() * (items.length - 1))];
+
+    }
+
+    public static getRandomDate(){
+        return new Date(+(new Date()) - Math.floor(Math.random()*10000000000));
+    }
+
+
+
     private static capFirst(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }

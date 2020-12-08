@@ -10,14 +10,8 @@ import{Generator} from '../core/generator';
 })
 export class AppComponent {
   title = 'angular-database-test';
-  sql: any = {};
-  sqlConnectionResponse$: Observable<any>;
-
-  constructor(private sqlService: SqlService){
-    alert(Generator.getName());
+  constructor(){
   }
 
-  connectSql(){
-    this.sqlConnectionResponse$ = this.sqlService.initialize(this.sql);
-  }
+
 }
