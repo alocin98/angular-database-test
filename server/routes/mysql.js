@@ -33,6 +33,14 @@ router.get('/reset', function(req, res, next) {
   })
 })
 
+router.post('/insert', function(req, res, next) {
+  print(req.body)
+  return connection.query(queries.reset(), function (error, results, fields) {
+    if (error) return res.send(error);
+    return res.send("successful")
+  })
+})
+
 router.get('/end', function(req, res, next) {
   resetConnection();
   return res.send("")
@@ -42,13 +50,6 @@ function resetConnection() {
   if(this.connection){
     this.connection.end();
   }
-}
-
-function testConnection() {
-  connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
-    if (err) throw err;
-    console.log('The solution is: ', rows[0].solution);
-  });
 }
 
 router.get('')
