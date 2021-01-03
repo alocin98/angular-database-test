@@ -4,7 +4,7 @@ var mysql = require('mysql');
 var SqlQueries = require('../queries/SqlQueries')
 var connection;
 var credentials;
-var Q = require('q');
+var dateFormat = require("dateformat");
 
 
 var queries = new SqlQueries('idpv6c282welyf4s');
@@ -31,6 +31,7 @@ router.post('/initialize', function(req, res, next) {
 
 router.get('/reset', function(req, res, next) {
   let connection = mysql.createConnection(credentials);
+  console.log("reset");
   connection.connect();
   connection.query(queries.reset(), function (error, results, fields) {
     if (error) return res.send(error);
@@ -39,7 +40,7 @@ router.get('/reset', function(req, res, next) {
   connection.end();
 })
 
-router.post('/customers/insert', function(req, res, next) {
+router.put('/insertCustomers', function(req, res, next) {
   let customers = req.body.map(c => Object.values(c));
   let connection = mysql.createConnection(credentials);
   console.log(customers);
@@ -56,7 +57,7 @@ router.post('/customers/insert', function(req, res, next) {
 
 });
 
-router.post('/orders/insert', function(req, res, next) {
+router.put('/insertOrders', function(req, res, next) {
   let orders = req.body.map(c => Object.values(c));
   let connection = mysql.createConnection(credentials);
 
@@ -71,20 +72,64 @@ router.post('/orders/insert', function(req, res, next) {
   connection.end();
 });
 
-router.post('/query', function(req, res, next){
+router.get('/getCustomersWhoHaveOrdered/:itemId', function(req, res, next) {
   let connection = mysql.createConnection(credentials);
-  if(req.body.key !== 'ffhsta2020'){
-    res.send("unauthorized");
-    return;
-  }
-  connection.query(req.body.query, (error, results, fields) => {
-    if(error){
-      res.send(error.message);
+  let itemId = req.params.itemId;
+
+  connection.query(queries.getCustomersWhoHaveOrdered(itemId), (error, results, fields)  => {
+    if (error){
+      res.send(error);
     } else {
       res.send(results);
     }
-  })
-})
+  });
+
+  connection.end();
+});
+
+router.post('/getOrdersWithin', function(req, res, next) {
+  let connection = mysql.createConnection(credentials);
+  let from = new Date(req.body["from"]);
+  let to = new Date(req.body["to"]);
+
+  connection.query(queries.getOrdersWithin(dateFormat(from, "yyyy-mm-dd"), dateFormat(to, "yyyy-mm-dd")), (error, results, fields)  => {
+    if (error){
+      res.send(error);
+    } else {
+      res.send(results);
+    }
+  });
+
+  connection.end();
+});
+
+router.post('/updateCustomer', function(req, res, next) {
+  let connection = mysql.createConnection(credentials);
+
+  connection.query(queries.updateCustomer(req.body), (error, results, fields)  => {
+    if (error){
+      res.send(error);
+    } else {
+      res.send(results);
+    }
+  });
+
+  connection.end();
+});
+
+router.delete('/deleteOrdersFrom/:customerId', function(req, res, next) {
+  let connection = mysql.createConnection(credentials);
+
+  connection.query(queries.deleteOrdersFromCustomer(req.params.customerId), (error, results, fields)  => {
+    if (error){
+      res.send(error);
+    } else {
+      res.send(results);
+    }
+  });
+
+  connection.end();
+});
 
 router.get('/end', function(req, res, next) {
   resetConnection();
