@@ -26,21 +26,19 @@
         </div>
         <button (click)="this.fillTestSrver()">fill test server</button>
         <button type="submit" class="btn btn-primary" (click)="this.connectSql()">connectSql</button>
-        <p>{{response$ | async | json}}</p>
       </form>
-        <div>
-          <button type="submit" class="btn btn-primary" (click)="connectSql()">Reset Database</button>
-          <p>Explenation</p>
-        </div>
-        <div class="flex-row">
-          <button type="submit" class="btn btn-primary" (click)="connectSql()">Test Inserts</button>
-          <p>Explenation</p>
-        </div>
-        <div class="flex-row">
-          <button type="submit" class="btn btn-primary" (click)="connectSql()">Test Reads</button>
-          <p>Explenation</p>
-        </div>
-        <div class="flex-row">
-          <button type="submit" class="btn btn-primary" (click)="connectSql()">Test Queries</button>
-          <p>Explenation</p>
-        </div>
+<button (click)="this.resetDB()">reset</button>
+<button (click)="this.insertCustomers(insertAmount.valueAsNumber)">add customers</button>
+<input type="number" #insertAmount placeholder="insert amount" />
+<button (click)="this.insertOrders()">add orders</button>
+<button (click)="this.getCustomersWhoHaveOrdered(orderItem.value)">Get Customers who have ordered</button>
+<input type="text" #orderItem placeholder="Item" />
+<button (click)="this.getOrdersWithin(from.valueAsDate, to.valueAsDate)">get orders in date</button>
+<input type="date" #from [value]="'01.11.2020'" placeholder="from"/>
+<input type="date" #to [value]="'30.11.2020'" placeholder="to"/>
+<button (click)="this.updateCustomerName(customer_id.valueAsNumber, name.value)">Update Customer</button>
+<input type="number" #customer_id value="2"/>
+<input type="text" #name value="Johnny Depp"/>
+<button (click)="this.deleteOrdersFrom(customerId.valueAsNumber)">Delete Orders from Customer nr</button>
+<input type="number" #customerId placeholder="Customer nr" />
+

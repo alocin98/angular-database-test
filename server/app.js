@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 
 var indexRouter = require('./routes/index');
 var mysqlRouter = require('./routes/mysql');
+var mongodbRouter = require('./routes/mongodb');
 
 var app = express();
 
@@ -21,6 +22,7 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/mysql', mysqlRouter);
+app.use('/mongodb', mongodbRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

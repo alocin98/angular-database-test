@@ -1,17 +1,14 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {IBenchmark} from '../../core/IBenchmark';
-import {catchError, map} from "rxjs/operators";
-import {throwError} from "rxjs";
-import {Customer, InsertData, Order} from "../../core/Interfaces";
-import {json} from "express";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {Customer, Order} from "../../core/Interfaces";
 
 @Injectable({
   providedIn: 'root'
 })
-export class SqlService {
+export class MongodbService {
 
-  BASE_URL = '/api/mysql';
+
+  BASE_URL = '/api/mongodb';
 
   credentials: any;
 
@@ -23,9 +20,12 @@ export class SqlService {
 
   constructor(private http: HttpClient) { }
 
-  initialize(credentials: any){
-    this.credentials = credentials;
-    return this.http.post(this.BASE_URL + '/initialize', credentials, this.httpConfig);
+  startConnection(mongodbURI: any){
+    return this.http.post(this.BASE_URL + '/startConnection', {mongodbURI: mongodbURI}, this.httpConfig).toPromise();
+  }
+
+  endConnection() {
+    return this.http.get(this.BASE_URL + '/endConnection', this.httpConfig).toPromise();
   }
 
   reset(): Promise<any> {
@@ -55,4 +55,5 @@ export class SqlService {
   deleteOrdersFrom(id: number): Promise<any>{
     return this.http.delete(this.BASE_URL + '/deleteOrdersFrom/' + id, this.httpConfig).toPromise();
   }
+
 }

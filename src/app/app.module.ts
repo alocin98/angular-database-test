@@ -11,16 +11,38 @@ import { IndexedDBComponent } from './components/indexed-db/indexed-db.component
 import { MongoDBComponent } from './components/mongo-db/mongo-db.component';
 import {DBConfig, NgxIndexedDBModule} from "ngx-indexed-db";
 
+export function migrationFactory() {
+  return {
+    1: (db, transaction) => {
+      const customers = transaction.objectStore('customers');
+      const orders = transaction.objectStore('orders');
+      customers.createIndex('id', 'id', { unique: false });
+      orders.createIndex('date', 'date', { unique: false });
+      orders.createIndex('item', 'item', { unique: false });
+      orders.createIndex('customer_id', 'customer_id', {unique: false});
+    }
+  };
+}
+
 const dbConfig: DBConfig  = {
-  name: 'MyDb',
+  name: 'MyDatabase',
   version: 1,
   objectStoresMeta: [{
-    store: 'customer',
+    store: 'customers',
     storeConfig: { keyPath: 'id', autoIncrement: true },
     storeSchema: [
       { name: 'name', keypath: 'name', options: { unique: false } }
     ]
-  }]
+  },{
+    store: 'orders',
+    storeConfig: { keyPath: 'id', autoIncrement: false },
+    storeSchema: [
+      { name: 'customer_id', keypath: 'customer_id', options: { unique: false } },
+      { name: 'date', keypath: 'date', options: { unique: false } },
+      { name: 'item', keypath: 'item', options: {unique: false} }
+    ]
+  }],
+  migrationFactory
 };
 
 @NgModule({

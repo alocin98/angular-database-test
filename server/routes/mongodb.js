@@ -5,86 +5,83 @@ var SqlQueries = require('../queries/SqlQueries')
 var connection;
 var credentials;
 var dateFormat = require("dateformat");
+const mongoose = require('mongoose');
 
+let mongodbURI = "";
+let customerSchema = new mongoose.Schema({
+  _id: Number,
+  name: String
+});
 
-var queries = new SqlQueries('idpv6c282welyf4s');
+let orderSchema = new mongoose.Schema({
+  _id: Number,
+  date: Date,
+  customer_id: Number,
+  items: String
+});
+
+let customer = mongoose.model('Customer', customerSchema);
+let order = mongoose.model('Order', orderSchema);
 
 /* GET mysql infos */
 router.get('/', function(req, res, next) {
-  res.send('mysql infos');
+  res.send('mongodb infos');
 });
 
 /* Initialize SQL Connection */
-router.post('/initialize', function(req, res, next) {
-  resetConnection();
-  credentials = req.body;
-  credentials.multipleStatements = true;
-  connection = mysql.createConnection(credentials);
-  connection.connect(function(err){
-    if(err){
-      res.status(400).send({"message":"Unable to connect to database. Connection string might be incorrect"})
-      return;
-    }
-    connection.end((error) => {res.send(JSON.stringify(connection.config));})
+router.post('/startConnection', function(req, res, next) {
+  mongodbURI = req.body.mongodbURI;
+  mongoose.connect(mongodbURI, { useNewUrlParser: true, useUnifiedTopology: true }).then((suc, rej) => {
+    if(rej) res.send(rej);
+    if(suc) res.send({message: "success"});
+  });
+});
+
+/* Initialize SQL Connection */
+router.get('/endConnection', function(req, res, next) {
+  mongoose.disconnect().then((suc, rej) => {
+    if(rej) res.send(rej);
+    if(suc) res.send({message: "success"});
   });
 });
 
 router.get('/reset', function(req, res, next) {
-  let connection = mysql.createConnection(credentials);
-  console.log("reset");
-  connection.connect();
-  connection.query(queries.reset(), function (error, results, fields) {
-    if (error) return res.send(error);
-    return res.send(results.message)
-  })
-  connection.end();
+  mongoose.connection.db.dropDatabase().then((suc, rej) => {
+    if(rej) res.send(rej);
+    if(suc) {
+      Promise.all([customer.createCollection(), order.createCollection()]).then(values => res.send({message: "successfully reseted db"})).catch(err => res.send(err));
+    }
+  });
 })
 
 router.put('/insertCustomers', function(req, res, next) {
-  let customers = req.body.map(c => Object.values(c));
-  let connection = mysql.createConnection(credentials);
-  console.log(customers);
-
-  connection.query(queries.insert_customers(), [customers],(error, results, fields) => {
-    if(error){
-      res.send(error);
-    } else {
-      res.send(results.message);
-    }
+  let customers = req.body;
+  customers.forEach(c => {
+    c._id = c.id;
+    delete c.id;
   });
-
-  connection.end();
-
+  customer.insertMany(customers).then(() => res.send({message: "Successfully inserted customers"})).catch(err => res.send(err));
 });
 
 router.put('/insertOrders', function(req, res, next) {
-  let orders = req.body.map(c => Object.values(c));
-  let connection = mysql.createConnection(credentials);
-
-  connection.query(queries.insert_orders(), [orders],(error, results, fields) => {
-    if(error){
-      res.send(error);
-    } else {
-      res.send(results.message);
-    }
-  });
-
-  connection.end();
+  let orders = req.body;
+  orders.forEach(o => {
+    o._id = o.id;
+    delete o.id;
+  })
+  console.log(orders.find(c => c.customer_id === 624));
+  order.create(orders).then(() => res.send({message: "Successfully inserted orders"})).catch(err => res.send(err));
 });
 
 router.get('/getCustomersWhoHaveOrdered/:itemName', function(req, res, next) {
-  let connection = mysql.createConnection(credentials);
-  let itemName = req.params.itemName;
-
-  connection.query(queries.getCustomersWhoHaveOrdered(itemName), (error, results, fields)  => {
-    if (error){
-      res.send(error);
-    } else {
-      res.send(results);
-    }
-  });
-
-  connection.end();
+  Order.find({item: req.params.itemName}).then((res, err) => res.send(res));
+  /*
+    .populate('customer_id')
+    .exec((err, users) => {
+      if(err) res.send(err.message);
+      res.send(users);
+    });
+   */
 });
 
 router.post('/getOrdersWithin', function(req, res, next) {
