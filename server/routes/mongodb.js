@@ -17,18 +17,16 @@ let orderSchema = new mongoose.Schema({
   _id: Number,
   date: Date,
   customer_id: Number,
-  items: String
+  item: String
 });
 
 let customer = mongoose.model('Customer', customerSchema);
 let order = mongoose.model('Order', orderSchema);
 
-/* GET mysql infos */
 router.get('/', function(req, res, next) {
   res.send('mongodb infos');
 });
 
-/* Initialize SQL Connection */
 router.post('/startConnection', function(req, res, next) {
   mongodbURI = req.body.mongodbURI;
   mongoose.connect(mongodbURI, { useNewUrlParser: true, useUnifiedTopology: true }).then((suc, rej) => {
@@ -37,7 +35,6 @@ router.post('/startConnection', function(req, res, next) {
   });
 });
 
-/* Initialize SQL Connection */
 router.get('/endConnection', function(req, res, next) {
   mongoose.disconnect().then((suc, rej) => {
     if(rej) res.send(rej);
@@ -74,71 +71,41 @@ router.put('/insertOrders', function(req, res, next) {
 });
 
 router.get('/getCustomersWhoHaveOrdered/:itemName', function(req, res, next) {
-  Order.find({item: req.params.itemName}).then((res, err) => res.send(res));
-  /*
-    .populate('customer_id')
-    .exec((err, users) => {
+  order.find({item: req.params.itemName}) //.then(items => res.send(items)).catch(err => res.send(err));
+    .populate('customer_id', 'name', 'Customer')
+    .select('item')
+    .exec((err, customers) => {
       if(err) res.send(err.message);
-      res.send(users);
+      else res.send(customers);
     });
-   */
 });
 
 router.post('/getOrdersWithin', function(req, res, next) {
-  let connection = mysql.createConnection(credentials);
   let from = new Date(req.body["from"]);
   let to = new Date(req.body["to"]);
-
-  connection.query(queries.getOrdersWithin(dateFormat(from, "yyyy-mm-dd"), dateFormat(to, "yyyy-mm-dd")), (error, results, fields)  => {
-    if (error){
-      res.send(error);
-    } else {
-      res.send(results);
+  order.find({
+    date: {
+      $gte: from,
+      $lt: to
     }
-  });
-
-  connection.end();
+  }).exec((err, orders) => {
+    if(err) res.send(err.message);
+    else res.send(orders);
+  })
 });
 
 router.post('/updateCustomer', function(req, res, next) {
-  let connection = mysql.createConnection(credentials);
-
-  connection.query(queries.updateCustomer(req.body), (error, results, fields)  => {
-    if (error){
-      res.send(error);
-    } else {
-      res.send(results);
-    }
-  });
-
-  connection.end();
+  customer.findOneAndUpdate({_id: req.body.id}, {name: req.body.newName}).exec((err, updated) => {
+    if(err) res.send(err.message);
+    else res.send(updated);
+  })
 });
 
 router.delete('/deleteOrdersFrom/:customerId', function(req, res, next) {
-  let connection = mysql.createConnection(credentials);
-
-  connection.query(queries.deleteOrdersFromCustomer(req.params.customerId), (error, results, fields)  => {
-    if (error){
-      res.send(error);
-    } else {
-      res.send(results);
-    }
-  });
-
-  connection.end();
+  order.deleteMany({customer_id: req.params.customerId}).exec((err, deleted) => {
+    if(err) res.send(err.message);
+    else res.send(deleted);
+  })
 });
-
-router.get('/end', function(req, res, next) {
-  resetConnection();
-  return res.send("")
-});
-
-function resetConnection() {
-  if(this.connection){
-    this.connection.end();
-  }
-}
-
-router.get('')
 
 module.exports = router;
